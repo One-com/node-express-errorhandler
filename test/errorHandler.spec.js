@@ -80,6 +80,9 @@ describe('errorHandler', function () {
 
     describe('abort a response stream', function () {
         it('should interrupt a stream that errors after the first output has been sent', function () {
+            // We inject a new set of headers in the middle of the
+            // response, to make sure to mess up the chunked encoding
+            // of the original response.
             return expect({
                 handler: function (req, res, next) {
                     res.contentType('text/html');
@@ -90,10 +93,23 @@ describe('errorHandler', function () {
                 locals: {
                     errorInfo: /"headersAlreadySent":true/
                 },
-                errorPassedToNext: 'foobar'
+                headers: {
+                    'Transfer-Encoding': 'chunked'
+                },
+                rawBody: expect.it('when decoded as', 'ascii', 'to match', new RegExp(
+                    "HTTP\/1.1 500 Let's ruin that response!\r\n" +
+                    "Content-Type: text\/plain\r\n" +
+                    "Transfer-Encoding: chunked\r\n" +
+                    "\r\n" +
+                    "0\r\n" +
+                    "\r\n$"
+                ))
             });
         });
         it('should interrupt a stream that errors after headers but before the first output has been sent', function () {
+            // This will result in the HTTP/1.1 200 OK response
+            // originally qued by express being written after our
+            // HTTP/1.1 500 ...
             return expect({
                 handler: function (req, res, next) {
                     res.writeHead(200, {
@@ -106,7 +122,7 @@ describe('errorHandler', function () {
                 locals: {
                     errorInfo: /"headersAlreadySent":true/
                 },
-                errorPassedToNext: 'foobar'
+                rawBody: expect.it('when decoded as', 'ascii', 'to match', /HTTP\/1.1 200 OK\r\n/)
             });
         });
     });
