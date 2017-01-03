@@ -8,6 +8,11 @@
     "test": "mocha",
     "travis": "istanbul --include-all-sources cover _mocha -- --reporter spec"
   },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:One-com/express-errorhandler.git"
+  },
+  "homepage": "https://github.com/One-com/express-errorhandler",
   "dependencies": {
     "httperrors": "1.1.0"
   },
