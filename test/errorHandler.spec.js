@@ -249,16 +249,16 @@ describe('errorHandler', function () {
         });
     });
 
-    describe('logger', function () {
+    describe('reporter', function () {
         it('should have access to request context', function () {
-            var logger = sinon.spy(function () {
+            var reporter = sinon.spy(function () {
                 return {
                     error: function () {}
                 };
             });
 
             var middleware = errorHandler({
-                logger: logger
+                reporter: reporter
             });
 
             var error = new Error;
@@ -267,7 +267,7 @@ describe('errorHandler', function () {
 
             middleware(error, request, response);
 
-            expect(logger, 'was called with', error, request, response);
+            expect(reporter, 'was called with', error, request, response);
         });
     });
 });
