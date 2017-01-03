@@ -6,6 +6,7 @@ var silentLogger = {
 var expect = require('unexpected')
     .clone()
     .installPlugin(require('unexpected-express'))
+    .installPlugin(require('unexpected-sinon'))
     .addAssertion('to yield response', function (expect, subject, value) {
         var handler = subject.handler || function (req, res, next) {
             next(subject.error || new Error('DefaultMockError'));
@@ -22,7 +23,7 @@ var expect = require('unexpected')
             response: value
         });
     });
-
+var sinon = require('sinon');
 
 describe('errorHandler', function () {
     it('should not handle non errors', function () {
@@ -245,6 +246,28 @@ describe('errorHandler', function () {
                     }
                 }
             });
+        });
+    });
+
+    describe('logger', function () {
+        it('should have access to request context', function () {
+            var logger = sinon.spy(function () {
+                return {
+                    error: function () {}
+                };
+            });
+
+            var middleware = errorHandler({
+                logger: logger
+            });
+
+            var error = new Error;
+            var request = { connection: {}, query: {}, is: function () {} };
+            var response = { locals: {}, status: function () { return { send: function() {} } } };
+
+            middleware(error, request, response);
+
+            expect(logger, 'was called with', error, request, response);
         });
     });
 });

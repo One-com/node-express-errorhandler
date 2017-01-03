@@ -18,8 +18,10 @@
     "magicpen-media": "1.5.1",
     "messy": "6.12.2",
     "mocha": "3.2.0",
+    "sinon": "1.17.7",
     "unexpected": "10.21.1",
     "unexpected-express": "8.3.3",
-    "unexpected-messy": "6.2.0"
+    "unexpected-messy": "6.2.0",
+    "unexpected-sinon": "10.5.1"
   }
 }
